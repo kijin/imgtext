@@ -38,6 +38,9 @@ the sad reality and automating image generation and use as much as possible.
     You only need to take the HTML markup and place it in your pages.
   - Since each word is turned into a separate image, the result can be
     easily re-flowed just like plain text.
+    (This only works with texts that contain spaces between words.
+    IMGText is optimized for Korean. Texts written in other languages might not
+    work as well if they do not contain spaces.)
   - Additional styling can be applied by using CSS and/or JavaScript
     on <img> tags with the "imgtext" class.
   - Each image is accompanied by corresponding alt-text, making the result
