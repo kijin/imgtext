@@ -63,7 +63,7 @@ class IMGText
         {
             $word = htmlspecialchars($img['word'], ENT_QUOTES, 'UTF-8');
             $path = htmlspecialchars($img['path'], ENT_QUOTES, 'UTF-8');
-            $html .= '<img class="imgtext" src="' . $path . '" alt="' . $word . '" /> ';
+            $html .= '<img class="imgtext" src="' . $path . '" alt="' . $word . '" title="" /> ';
         }
         
         // Save the HTML markup to cache, and return it.
