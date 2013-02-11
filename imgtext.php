@@ -1,10 +1,10 @@
 <?php
 
 /**
- * IMGText: PHP & GD library for generating text-containing images on the fly
+ * IMGText: For the rest of us who are stuck without web fonts
  * 
  * URL: http://github.com/kijin/imgtext
- * Version: 0.1
+ * Version: 0.1.1
  * 
  * Copyright (c) 2013, Kijin Sung <kijin@kijinsung.com>
  * 
