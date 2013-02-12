@@ -4,7 +4,7 @@
  * IMGText: For the rest of us who are stuck without web fonts
  * 
  * URL: http://github.com/kijin/imgtext
- * Version: 0.1.1
+ * Version: 0.1.2
  * 
  * Copyright (c) 2013, Kijin Sung <kijin@kijinsung.com>
  * 
@@ -47,16 +47,16 @@ class IMGText
     
     // Call this method to retrieve the HTML markup for your text.
     
-    public function get_html($text, $font, $size, $color = '000', $bg = false)
+    public function get_html($text, $font, $size, $color = '000', $bg = false, $height = false, $margins = array(0, 0, 0, 0))
     {
         // Compute a hash for this method call, and return cached HTML markup if possible.
         
-        $hash = substr(md5(serialize(array($text, $font, $size, $color, $bg))), 0, 12);
+        $hash = substr(md5(serialize(array($text, $font, $size, $color, $bg, $height, $margins))), 0, 12);
         if ($html = $this->get_cache($hash)) return $html;
         
         // If cached HTML markup is not available, create it now.
         
-        $result = $this->create_images($hash, $text, $font, $size, $color, $bg);
+        $result = $this->create_images($hash, $text, $font, $size, $color, $bg, $height, $margins);
         $html = '';
         
         foreach ($result as $img)
@@ -91,7 +91,7 @@ class IMGText
     
     // This method creates the actual PNG images.
     
-    protected function create_images($hash, $text, $font, $size, $color, $bg)
+    protected function create_images($hash, $text, $font, $size, $color, $bg, $height, $margins)
     {
         // Check parameters.
         
@@ -114,13 +114,26 @@ class IMGText
             throw new IMGTextException('Invalid background color: ' . $color);
         }
         
+        if (!is_array($margins) || count($margins) != 4)
+        {
+            throw new IMGTextException('Invalid margins');
+        }
+        
         // Split the text into words.
         
         $words = preg_split('/\\s+/u', $text);
         
+        // Parse the margins.
+        
+        $margin_top = intval($margins[0]);
+        $margin_right = intval($margins[1]);
+        $margin_bottom = intval($margins[2]);
+        $margin_left = intval($margins[3]);
+        
         // Get size information for each word.
         
         $fragments = array();
+        $fixed_height = intval($height);
         $max_height = 0;
         $max_top = 0;
         
@@ -148,10 +161,6 @@ class IMGText
             $fragments[] = array($w, $width, $height, $left, $top);
         }
         
-        // Fudge the height a little bit to make it even.
-        
-        if ($max_height % 2 != 0) $max_height++;
-        
         // Create images for each word.
         
         $count = 1;
@@ -161,7 +170,11 @@ class IMGText
         {
             list($w, $width, $height, $left, $top) = $f;
             
-            $img = imageCreateTrueColor($width, $max_height);
+            $imgwidth = $width + $margin_left + $margin_right;
+            $imgheight = ($fixed_height > 0) ? $fixed_height : $max_height;
+            $imgheight += $margin_top + $margin_bottom;
+            
+            $img = imageCreateTrueColor($imgwidth, $imgheight);
             
             // Draw the background.
             
@@ -170,21 +183,21 @@ class IMGText
                 imageSaveAlpha($img, true);
                 imageAlphaBlending($img, false);
                 $background = imageColorAllocateAlpha($img, 255, 255, 255, 127);
-                imageFilledRectangle($img, 0, 0, $width, $max_height, $background);
+                imageFilledRectangle($img, 0, 0, $imgwidth, $imgheight, $background);
                 imageAlphaBlending($img, true);
             }
             else  // Colored background.
             {
                 $bgcolors = $this->hex2rgb($bg);
                 $background = imageColorAllocate($img, $bgcolors[0], $bgcolors[1], $bgcolors[2]);
-                imageFilledRectangle($img, 0, 0, $width, $max_height, $background);
+                imageFilledRectangle($img, 0, 0, $imgwidth, $imgheight, $background);
             }
             
             // Draw the word.
             
             $fgcolors = $this->hex2rgb($color);
             $foreground = imageColorAllocate($img, $fgcolors[0], $fgcolors[1], $fgcolors[2]);
-            imageTTFText($img, $font_size, 0, $left, $max_top - 1, $foreground, $font_filename, $w);
+            imageTTFText($img, $font_size, 0, ($left + $margin_left), ($max_top + $margin_top - 1), $foreground, $font_filename, $w);
             
             // Save to a PNG file.
             
