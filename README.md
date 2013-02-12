@@ -69,9 +69,6 @@ the sad reality and automating image generation and use as much as possible.
   - Images and HTML markup are cached and reused every time you request
     an identical string with identical styles. This makes IMGText very fast.
 
-IMGText is most beneficial when used in headings. It is not recommended for
-body text, which can easily become a mess with hundreds of small images.
-
 ### API Reference
 
 To use IMGText, include the `imgtext.php` file into your project.
@@ -155,6 +152,15 @@ Return value: A string containing the HTML markup.
   - The HTML markup should be pasted into a page encoded in UTF-8.
 
 ### Miscellaneous Information
+
+IMGText is most beneficial when used in headings. It is not recommended for
+body text, which can easily become a mess with hundreds of small images.
+
+IMGText works best when you use font sizes above 20 points.
+If you need smaller fonts, consider generating PNG images using large fonts
+(2x magnification) and resizing them using CSS height.
+This ensures a smooth look, as well as compatibility with high-resolution
+(so-called Retina) displays.
 
 IMGText requires PHP 5 and GD. All text must be encoded in UTF-8.
 
