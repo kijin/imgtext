@@ -6,6 +6,25 @@ IMGText는 주어진 문자열의 각 단어를 PNG 이미지로 변환하고,
 그 이미지들을 일반적인 글자처럼 자연스럽게 디스플레이할 수 있도록
 HTML 마크업을 생성해 주는 PHP 라이브러리입니다.
 
+#### 코드 예제:
+
+    $imgtext = new IMGText;
+    $imgtext->cache_url_prefix = '.';
+    $imgtext->cache_local_dir = dirname(__FILE__);
+    $imgtext->font_dir = '/usr/share/fonts/truetype/nanum';
+    echo $imgtext->get_html("네이버 '나눔손글씨 붓'으로 작성된 제목",
+        'nanumbrush', 24, '666', false, $height);
+
+#### 출력 결과:
+
+> <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-001.png" alt="네이버" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-002.png" alt="&#039;나눔손글씨" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-003.png" alt="붓&#039;으로" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-004.png" alt="작성된" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-005.png" alt="제목" title="" />&nbsp;
+
+#### 왜 필요하죠?
+
 대부분의 서양 언어들은 웹 폰트를 사용하여 아름답게 꾸밀 수 있습니다.
 서양의 문자 체계들은 대개 수십 개의 기호만을 사용하기 때문에,
 웹 폰트의 용량도 수십 KB에 불과하여 간편하게 다운로드가 가능합니다.
@@ -52,8 +71,13 @@ IMGText는 웹 페이지의 표제를 비롯한 큰 글씨에 적용하는 것�
 긴 글은 수백 개의 작은 이미지로 분할되어 불편을 끼칠 우려가 있으므로,
 문서의 본문에 적용하는 것은 추천하지 않습니다.
 
+#### 세부 정보
+
 IMGText는 PHP 5 이상에서 작동하며, GD 모듈에 의존합니다.
 모든 문자열은 UTF-8로 인코딩되어야 합니다.
+
+ImgText는 글꼴 파일을 포함하지 않습니다.
+사용자가 보유한 TTF 파일을 사용하셔야 합니다.
 
 IMGText는 MIT 라이선스의 적용을 받는 오픈 소스 소프트웨어입니다.
 개인적, 비영리, 영리, 정부 등 어떤 목적으로도 자유롭게 사용하실 수 있습니다.
