@@ -7,7 +7,22 @@ and then generates HTML markup to display those images as if they were text.
 
 [This documentation is also available in Korean.](./README.KO.md)
 
-[See example here.](./examples/example.md)
+#### Example Code:
+
+    $imgtext = new IMGText;
+    $imgtext->cache_url_prefix = '.';
+    $imgtext->cache_local_dir = dirname(__FILE__);
+    $imgtext->font_dir = '/usr/share/fonts/truetype/nanum';
+    echo $imgtext->get_html("네이버 '나눔손글씨 붓'으로 작성된 제목",
+        'nanumbrush', 24, '666', false, $height);
+
+#### Example Output:
+
+<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-001.png" alt="네이버" title="" />&nbsp;
+<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-002.png" alt="&#039;나눔손글씨" title="" />&nbsp;
+<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-003.png" alt="붓&#039;으로" title="" />&nbsp;
+<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-004.png" alt="작성된" title="" />&nbsp;
+<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-005.png" alt="제목" title="" />&nbsp;
 
 Most of the time, Western text on the Web can be easily stylized with web fonts.
 Since the majority of Western writing systems contain only a few dozen glyphs,
