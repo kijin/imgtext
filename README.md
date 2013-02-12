@@ -142,9 +142,17 @@ Arguments:
     the extra margins in that case.
 
 Return value: A string containing the HTML markup.
-There is no need to escape special characters in this string,
-because they are already escaped.
-The HTML markup should be pasted into a page encoded in UTF-8.
+
+  - Each `<img>` tag will have one class, `imgtext`.
+    You can attach styles to this class, or manipulate it with JavaScript.
+  - The `<img>` tags will be separated by one space character (0x20).
+    If multiple spaces are present between words, only one space will be used.
+    The same applies to newlines, so it is currently not possible to have
+    paragraph breaks inside the generated HTML markup.
+    If you need paragraphs, consider using IMGText on one paragraph at a time.
+  - There is no need to escape special characters in this string,
+    because they are already escaped.
+  - The HTML markup should be pasted into a page encoded in UTF-8.
 
 ### Miscellaneous Information
 
