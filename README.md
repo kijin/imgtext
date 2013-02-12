@@ -4,7 +4,10 @@ Introduction
 
 IMGText is a PHP library that generates a PNG image for each word in a string,
 and then generates HTML markup to display those images as if they were text.
-[Also available in Korean](http://github.com/kijin/imgtext/blob/master/README.KO.md).
+
+[This documentation is also available in Korean.](./README.KO.md)
+
+[See example here.](./examples/example.md)
 
 Most of the time, Western text on the Web can be easily stylized with web fonts.
 Since the majority of Western writing systems contain only a few dozen glyphs,
