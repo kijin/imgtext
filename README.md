@@ -18,11 +18,13 @@ and then generates HTML markup to display those images as if they were text.
 
 #### Example Output:
 
-<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-001.png" alt="네이버" title="" />&nbsp;
-<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-002.png" alt="&#039;나눔손글씨" title="" />&nbsp;
-<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-003.png" alt="붓&#039;으로" title="" />&nbsp;
-<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-004.png" alt="작성된" title="" />&nbsp;
-<img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-005.png" alt="제목" title="" />&nbsp;
+> <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-001.png" alt="네이버" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-002.png" alt="&#039;나눔손글씨" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-003.png" alt="붓&#039;으로" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-004.png" alt="작성된" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-005.png" alt="제목" title="" />&nbsp;
+
+#### Why?
 
 Most of the time, Western text on the Web can be easily stylized with web fonts.
 Since the majority of Western writing systems contain only a few dozen glyphs,
@@ -68,7 +70,11 @@ the sad reality and automating image generation and use as much as possible.
 IMGText is most beneficial when used in headings. It is not recommended for
 body text, which can easily become a mess with hundreds of small images.
 
+#### Miscellaneous Information
+
 IMGText requires PHP 5 and GD. All text must be encoded in UTF-8.
+
+IMGText does not include any font files. Bring your own TTFs!
 
 IMGText is released under the MIT license. It is freely available for
 personal, non-profit, commercial, governmental, and any other use.
