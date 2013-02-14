@@ -13,8 +13,7 @@ and then generates HTML markup to display those images as if they were text.
     $imgtext->cache_url_prefix = '.';
     $imgtext->cache_local_dir = dirname(__FILE__);
     $imgtext->font_dir = '/usr/share/fonts/truetype/nanum';
-    echo $imgtext->get_html("네이버 '나눔손글씨 붓'으로 작성된 제목",
-        'nanumbrush', 24, '666', false, $height);
+    echo $imgtext->get_html("네이버 '나눔손글씨 붓'으로 작성된 제목", 'NanumBrush', 24, '#606060');
 
 ### Example Output:
 
