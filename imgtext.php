@@ -50,9 +50,9 @@ class IMGText
     public $effect = 'normal';
     
     // Set the shadow effect options
-    private $shadow_left;
-    private $shadow_top;
-    private $shadow_color;
+    protected $shadow_left;
+    protected $shadow_top;
+    protected $shadow_color;
 	
     // Call this method to retrieve the HTML markup for your text.
     
