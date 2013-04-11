@@ -45,10 +45,15 @@ class IMGText
     
     public $font_ext = 'ttf';
     
-    // Set the effect
+	// Set the effect
+	
+	public $effect = 'normal';
     
-    public $effect = 'normal';
-    
+	// Set the shadow effect options
+	private $shadow_left;
+	private $shadow_top;
+	private $shadow_color;
+	
     // Call this method to retrieve the HTML markup for your text.
     
     public function get_html($text, $font, $size, $color = '000', $bg = false, $height = false, $margins = array(0, 0, 0, 0))
@@ -174,9 +179,9 @@ class IMGText
         {
             list($w, $width, $height, $left, $top) = $f;
             
-            $imgwidth = $width + $margin_left + $margin_right;
+            $imgwidth = $width + $margin_left + $margin_right + 2;
             $imgheight = ($fixed_height > 0) ? $fixed_height : $max_height;
-            $imgheight += $margin_top + $margin_bottom;
+            $imgheight += $margin_top + $margin_bottom + 2;
             
             $img = imageCreateTrueColor($imgwidth, $imgheight);
             
@@ -196,15 +201,23 @@ class IMGText
                 $background = imageColorAllocate($img, $bgcolors[0], $bgcolors[1], $bgcolors[2]);
                 imageFilledRectangle($img, 0, 0, $imgwidth, $imgheight, $background);
             }
-            
-            // Draw the word.
-            
+
+			switch($this->effect){
+				case'shadow':
+					$shadow_colors = $this->hex2rgb($this->shadow_color);
+					$shadow_color = imageColorAllocate($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2]);
+					imageTTFText($img, $font_size, 0, ($left + $margin_left + $this->shadow_left), ($max_top + $margin_top + $this->shadow_top), $shadow_color, $font_filename, $w);
+					break;
+				default:
+					break;
+			}
+			
+			// Draw the word.
             $fgcolors = $this->hex2rgb($color);
             $foreground = imageColorAllocate($img, $fgcolors[0], $fgcolors[1], $fgcolors[2]);
             imageTTFText($img, $font_size, 0, ($left + $margin_left), ($max_top + $margin_top - 1), $foreground, $font_filename, $w);
-            
+			
             // Save to a PNG file.
-            
             $filename = '/imgtext.' . $hash . '.word-' . str_pad($count, 3, '0', STR_PAD_LEFT) . '.png';
             imagePNG($img, $this->cache_local_dir . $filename);
             imageDestroy($img);
@@ -251,6 +264,13 @@ class IMGText
         
         return array($r, $g, $b);
     }
+	
+	public function set_shadow_effect($effect, $shadow_left = 5, $shadow_top = 2, $shadow_color = "#808080"){
+		$this->effect = $effect;
+		$this->shadow_left = $shadow_left;
+		$this->shadow_top = $shadow_top;
+		$this->shadow_color = $shadow_color;
+	}
 }
 
 // Exception class.
