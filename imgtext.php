@@ -181,7 +181,8 @@ class IMGText
             
             $imgwidth = $width + $margin_left + $margin_right + 2;
             $imgheight = ($fixed_height > 0) ? $fixed_height : $max_height;
-            $imgheight += $margin_top + $margin_bottom + 2;
+            $imgheight += $margin_top + $margin_bottom;
+            if($this->effect == "shadow") $imgheight += 2;
             
             $img = imageCreateTrueColor($imgwidth, $imgheight);
             
