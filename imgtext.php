@@ -47,7 +47,7 @@ class IMGText
     
     // Set the effect
     
-	public $effect = 'normal';
+    public $effect = 'normal';
     
     // Call this method to retrieve the HTML markup for your text.
     
