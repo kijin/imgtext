@@ -45,14 +45,14 @@ class IMGText
     
     public $font_ext = 'ttf';
     
-	// Set the effect
+    // Set the effect
 	
-	public $effect = 'normal';
+    public $effect = 'normal';
     
-	// Set the shadow effect options
-	private $shadow_left;
-	private $shadow_top;
-	private $shadow_color;
+    // Set the shadow effect options
+    private $shadow_left;
+    private $shadow_top;
+    private $shadow_color;
 	
     // Call this method to retrieve the HTML markup for your text.
     
@@ -202,17 +202,17 @@ class IMGText
                 imageFilledRectangle($img, 0, 0, $imgwidth, $imgheight, $background);
             }
 
-			switch($this->effect){
-				case'shadow':
-					$shadow_colors = $this->hex2rgb($this->shadow_color);
-					$shadow_color = imageColorAllocate($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2]);
-					imageTTFText($img, $font_size, 0, ($left + $margin_left + $this->shadow_left), ($max_top + $margin_top + $this->shadow_top), $shadow_color, $font_filename, $w);
-					break;
-				default:
-					break;
-			}
+            switch($this->effect){
+                case'shadow':
+                    $shadow_colors = $this->hex2rgb($this->shadow_color);
+                    $shadow_color = imageColorAllocate($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2]);
+                    imageTTFText($img, $font_size, 0, ($left + $margin_left + $this->shadow_left), ($max_top + $margin_top + $this->shadow_top), $shadow_color, $font_filename, $w);
+                    break;
+                default:
+                    break;
+            }
 			
-			// Draw the word.
+            // Draw the word.
             $fgcolors = $this->hex2rgb($color);
             $foreground = imageColorAllocate($img, $fgcolors[0], $fgcolors[1], $fgcolors[2]);
             imageTTFText($img, $font_size, 0, ($left + $margin_left), ($max_top + $margin_top - 1), $foreground, $font_filename, $w);
@@ -265,12 +265,12 @@ class IMGText
         return array($r, $g, $b);
     }
 	
-	public function set_shadow_effect($effect, $shadow_left = 5, $shadow_top = 2, $shadow_color = "#808080"){
-		$this->effect = $effect;
-		$this->shadow_left = $shadow_left;
-		$this->shadow_top = $shadow_top;
-		$this->shadow_color = $shadow_color;
-	}
+    public function set_shadow_effect($effect, $shadow_left = 5, $shadow_top = 2, $shadow_color = "#808080"){
+        $this->effect = $effect;
+        $this->shadow_left = $shadow_left;
+        $this->shadow_top = $shadow_top;
+        $this->shadow_color = $shadow_color;
+    }
 }
 
 // Exception class.
