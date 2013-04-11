@@ -45,6 +45,10 @@ class IMGText
     
     public $font_ext = 'ttf';
     
+    // Set the effect
+    
+	public $effect = 'normal';
+    
     // Call this method to retrieve the HTML markup for your text.
     
     public function get_html($text, $font, $size, $color = '000', $bg = false, $height = false, $margins = array(0, 0, 0, 0))
