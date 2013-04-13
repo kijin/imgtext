@@ -132,17 +132,17 @@ class IMGText
     
     // This method creates the actual PNG images.
     
-    protected function create_images($hash, $text, $font, $size, $color, $bg, $height, $padding)
+    protected function create_images($hash, $text, $font_name, $font_size, $color, $background_color, $height, $padding)
     {
         // Check parameters.
         
         if (trim($text) === '') return array();
         if (!mb_check_encoding($text, 'UTF-8')) throw new IMGTextException('String is not valid UTF-8');
         
-        $font_filename = $this->font_dir . '/' . $font . '.' . $this->font_ext;
+        $font_filename = $this->font_dir . '/' . $font_name . '.' . $this->font_ext;
         if (!file_exists($font_filename)) throw new IMGTextException('Font not found: ' . $font);
         
-        $font_size = (int)$size;
+        $font_size = (int)$font_size;
         if ($font_size <= 0) throw new IMGTextException('Invalid font size: ' . $size);
         
         if (!preg_match('/^#?(?:[0-9a-f]{3})(?:[0-9a-f]{3})?$/', $color))
@@ -150,14 +150,14 @@ class IMGText
             throw new IMGTextException('Invalid text color: ' . $color);
         }
         
-        if ($bg !== false && !preg_match('/^#?(?:[0-9a-f]{3})(?:[0-9a-f]{3})?$/', $bg))
+        if ($background_color !== false && !preg_match('/^#?(?:[0-9a-f]{3})(?:[0-9a-f]{3})?$/', $background_color))
         {
             throw new IMGTextException('Invalid background color: ' . $color);
         }
         
         if (!is_array($padding) || count($padding) != 4)
         {
-            throw new IMGTextException('Invalid margins');
+            throw new IMGTextException('Invalid padding');
         }
         
         // Split the text into words.
@@ -211,33 +211,33 @@ class IMGText
         {
             list($w, $width, $height, $left, $top) = $f;
             
-            $imgwidth = $width + $padding_left + $padding_right;
-            $imgheight = ($fixed_height > 0) ? $fixed_height : $max_height;
-            $imgheight += $padding_top + $padding_bottom;
+            $img_width = $width + $padding_left + $padding_right;
+            $img_height = ($fixed_height > 0) ? $fixed_height : $max_height;
+            $img_height += $padding_top + $padding_bottom;
             
             if ($this->shadow)
             {
-                $imgwidth += $this->shadow_offset[0];
-                $imgheight += $this->shadow_offset[1];
+                $img_width += $this->shadow_offset[0];
+                $img_height += $this->shadow_offset[1];
             }
             
-            $img = imageCreateTrueColor($imgwidth, $imgheight);
+            $img = imageCreateTrueColor($img_width, $img_height);
             
             // Draw the background.
             
-            if ($bg === false)  // Transparent background.
+            if ($background_color === false)  // Transparent background.
             {
                 imageSaveAlpha($img, true);
                 imageAlphaBlending($img, false);
-                $background = imageColorAllocateAlpha($img, 255, 255, 255, 127);
-                imageFilledRectangle($img, 0, 0, $imgwidth, $imgheight, $background);
+                $img_background_color = imageColorAllocateAlpha($img, 255, 255, 255, 127);
+                imageFilledRectangle($img, 0, 0, $img_width, $img_height, $img_background_color);
                 imageAlphaBlending($img, true);
             }
             else  // Colored background.
             {
-                $bgcolors = $this->hex2rgb($bg);
-                $background = imageColorAllocate($img, $bgcolors[0], $bgcolors[1], $bgcolors[2]);
-                imageFilledRectangle($img, 0, 0, $imgwidth, $imgheight, $background);
+                $img_background_colors = $this->hex2rgb($background_color);
+                $img_background_color = imageColorAllocate($img, $img_background_colors[0], $img_background_colors[1], $img_background_colors[2]);
+                imageFilledRectangle($img, 0, 0, $img_width, $img_height, $img_background_color);
             }
             
             // Draw the shadow.
@@ -255,9 +255,9 @@ class IMGText
             
             // Draw the word.
             
-            $fgcolors = $this->hex2rgb($color);
-            $foreground = imageColorAllocate($img, $fgcolors[0], $fgcolors[1], $fgcolors[2]);
-            imageTTFText($img, $font_size, 0, ($left + $padding_left - 1), ($max_top + $padding_top - 1), $foreground, $font_filename, $w);
+            $text_colors = $this->hex2rgb($color);
+            $text_color = imageColorAllocate($img, $text_colors[0], $text_colors[1], $text_colors[2]);
+            imageTTFText($img, $font_size, 0, ($left + $padding_left - 1), ($max_top + $padding_top - 1), $text_color, $font_filename, $w);
 			
             // Save to a PNG file.
             
