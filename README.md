@@ -115,27 +115,27 @@ Here is a list of available methods, properties, and their signatures:
     The name of the font file that you want to use.
     This value is case-sensitive.
     
-  - _int_ **$font_size** (optional):
+  - _int_ **font_size** (optional):
     The size of the font that you want to use, measured in points.
     The default value is 32 points.
     
-  - _int_ **$image_height** (optional):
+  - _int_ **image_height** (optional):
     The height of the generated images, in pixels.
     You can use this argument to force a specific height.
     By default, the height is automatically determined.
     
-  - _hex_ **$color** (optional):
+  - _hex_ **color** (optional):
     The color of the text, in a hexademical notation similar to CSS,
     such as `#0000ff` (blue).
     Three-digit shortcuts are also supported, such as `#f00` (red).
     The default value is `#000000` (black).
     
-  - _hex_ **$background_color** (optional):
+  - _hex_ **background_color** (optional):
     The background color. The syntax is the same as $color above.
     Use `false` to indicate a transparent background.
     The default value is transparent.
     
-  - _array_ **$padding** (optional):
+  - _array_ **padding** (optional):
     The padding around each image, measured in pixels.
     Your array should contain 4 integers. The order is the same as in CSS,
     i.e. top-right-bottom-left. Padding may be useful if your font
@@ -144,21 +144,21 @@ Here is a list of available methods, properties, and their signatures:
     the extra padding in that case.
     The default value is no padding.
 
-  - _bool_ **$shadow** (optional):
+  - _bool_ **shadow** (optional):
     Change this to `true` to enable text shadows.
     The default value is `false`.
     
-  - _hex_ **$shadow_color** (optional):
+  - _hex_ **shadow_color** (optional):
     The color of text shadows. The syntax is the same as $color above.
     The default value is `#000000` (black).
     
-  - _int_ **$shadow_opacity** (optional):
+  - _int_ **shadow_opacity** (optional):
     The opacity of text shadows.
     This should be an integer between 0 and 127,
     where 0 is fully opaque and 127 is fully transparent.
     The default value is 64, half transparent.
 
-  - _array_ **$shadow_offset** (optional):
+  - _array_ **shadow_offset** (optional):
     The offset of text shadows relative to the text, measured in pixels.
     Your array should contain 2 integers:
     the horizontal offset and the vertical offset.
@@ -166,7 +166,7 @@ Here is a list of available methods, properties, and their signatures:
     and negative values to produce shadows to the left and/or above.
     The default is (2, 2).
 
-  - _int_ **$shadow_blur** (optional):
+  - _int_ **shadow_blur** (optional):
     The blur around text shadows, measured in pixels.
     The default is no blur.
 
