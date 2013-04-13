@@ -215,17 +215,19 @@ class IMGText
             $img_height = ($fixed_height > 0) ? $fixed_height : $max_height;
             $img_height += $padding_top + $padding_bottom;
             
+            // Adjust image size and text location if there's a shadow.
+            
             if ($this->shadow)
             {
-                $img_width += $this->shadow_offset[0];
-                $img_height += $this->shadow_offset[1];
+                $img_width += abs($this->shadow_offset[0]) + $this->shadow_blur;
+                $img_height += abs($this->shadow_offset[1]) + $this->shadow_blur;
             }
             
             $img = imageCreateTrueColor($img_width, $img_height);
             
             // Draw the background.
             
-            if ($background_color === false)  // Transparent background.
+            if ($background_color === false)
             {
                 imageSaveAlpha($img, true);
                 imageAlphaBlending($img, false);
@@ -233,7 +235,7 @@ class IMGText
                 imageFilledRectangle($img, 0, 0, $img_width, $img_height, $img_background_color);
                 imageAlphaBlending($img, true);
             }
-            else  // Colored background.
+            else
             {
                 $img_background_colors = $this->hex2rgb($background_color);
                 $img_background_color = imageColorAllocate($img, $img_background_colors[0], $img_background_colors[1], $img_background_colors[2]);
@@ -244,19 +246,25 @@ class IMGText
             
             if ($this->shadow)
             {
-                if ($background_color === false)  // Transparent background needs manual alpha merge, because GD can't blur transparent images.
+                // Blurred shadow on a transparent background needs special treatment because of GD's limitations.
+                
+                if ($this->shadow_blur && $background_color === false)
                 {
-                    $shadow_colors = $this->hex2rgb($this->shadow_color);
+                    // Create a temporary image for the shadow.
+                    
                     $temp = imageCreateTrueColor($img_width, $img_height);
                     imageSaveAlpha($temp, true);
                     imageFilledRectangle($temp, 0, 0, $img_width, $img_height, imageColorAllocate($temp, 127, 127, 127));
                     
+                    // Draw the shadow text on the temporary image, and blur it.
+                    
                     $temp_text_color = imageColorAllocate($temp, $this->shadow_opacity, $this->shadow_opacity, $this->shadow_opacity);
                     imageTTFText($temp, $font_size, 0, ($left + $padding_left + $this->shadow_offset[0] - 1), ($max_top + $padding_top + $this->shadow_offset[1] - 1), $temp_text_color, $font_filename, $w);
-                    for ($i = 0; $i < $this->shadow_blur; $i++)
-                    {
-                        imageFilter($temp, IMG_FILTER_GAUSSIAN_BLUR);
-                    }
+                    for ($i = 0; $i < $this->shadow_blur; $i++) imageFilter($temp, IMG_FILTER_GAUSSIAN_BLUR);
+                    
+                    // Use the blurred shadow as an alpha mask on the original image.
+                    
+                    $shadow_colors = $this->hex2rgb($this->shadow_color);
                     for ($x = 0; $x < $img_width; $x++)
                     {
                         for ($y = 0; $y < $img_height; $y++)
@@ -265,16 +273,18 @@ class IMGText
                             imageSetPixel($img, $x, $y, imageColorAllocateAlpha($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2], $alpha));
                         }
                     }
+                    
+                    imageDestroy($temp);
                 }
-                else  // Colored background works fine without any additional code.
+                
+                // Other shadows can be created much more easily.
+                
+                else
                 {
                     $shadow_colors = $this->hex2rgb($this->shadow_color);
                     $shadow_color = imageColorAllocateAlpha($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2], $this->shadow_opacity);
                     imageTTFText($img, $font_size, 0, ($left + $padding_left + $this->shadow_offset[0] - 1), ($max_top + $padding_top + $this->shadow_offset[1] - 1), $shadow_color, $font_filename, $w);
-                    for ($i = 0; $i < $this->shadow_blur; $i++)
-                    {
-                        imageFilter($img, IMG_FILTER_GAUSSIAN_BLUR);
-                    }
+                    for ($i = 0; $i < $this->shadow_blur; $i++) imageFilter($img, IMG_FILTER_GAUSSIAN_BLUR);
                 }
             }
             
