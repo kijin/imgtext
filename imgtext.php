@@ -49,15 +49,15 @@ class IMGText
     
     public $font_name;
     
-    // Set the size of the font.
+    // Set the size of the font. The default is 32 pixels.
     
-    public $font_size;
+    public $font_size = 32;
     
     // Set the image height. The default is automatic.
     
     public $image_height = false;
     
-    // Set the text color.
+    // Set the text color. The default is black.
     
     public $color = '#000';
     
@@ -65,7 +65,7 @@ class IMGText
     
     public $background_color = false;
     
-    // Set the padding amount.
+    // Set the padding amount. The default is no padding.
     
     public $padding = array(0, 0, 0, 0);
     
@@ -182,7 +182,7 @@ class IMGText
         $padding_bottom = intval($this->padding[2]);
         $padding_left = intval($this->padding[3]);
         
-        // Get size information for each word.
+        // Get size information for each word. We do this first, in order to find out the maximum height.
         
         $fragments = array();
         $max_height = 0;
