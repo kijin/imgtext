@@ -14,15 +14,20 @@ HTML 마크업을 생성해 주는 PHP 라이브러리입니다.
     $imgtext->cache_url_prefix = '.';
     $imgtext->cache_local_dir = dirname(__FILE__);
     $imgtext->font_dir = '/usr/share/fonts/truetype/nanum';
-    echo $imgtext->get_html("네이버 '나눔손글씨 붓'으로 작성된 제목", 'NanumBrush', 24, '#606060');
+    $imgtext->font_name = 'NanumBrush';
+    $imgtext->font_size = 32;
+    $imgtext->color = '#404040';
+    $imgtext->shadow = true;
+    $imgtext->shadow_blur = 2;
+    echo $imgtext->get_html("네이버 ‘나눔손글씨 붓’으로 작성된 제목");
 
 ### 출력 결과:
 
-> <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-001.png" alt="네이버" title="" />&nbsp;
-  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-002.png" alt="&#039;나눔손글씨" title="" />&nbsp;
-  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-003.png" alt="붓&#039;으로" title="" />&nbsp;
-  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-004.png" alt="작성된" title="" />&nbsp;
-  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.70da76625ab8.word-005.png" alt="제목" title="" />&nbsp;
+> <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.4b470a0626e7ca.word-001.png" alt="네이버" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.4b470a0626e7ca.word-002.png" alt="‘나눔손글씨" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.4b470a0626e7ca.word-003.png" alt="붓’으로" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.4b470a0626e7ca.word-004.png" alt="작성된" title="" />&nbsp;
+  <img class="imgtext" src="https://github.com/kijin/imgtext/raw/master/example/imgtext.4b470a0626e7ca.word-005.png" alt="제목" title="" />&nbsp;
 
 ### 왜 IMGText가 필요하죠?
 
@@ -61,7 +66,8 @@ IMGText는 이와 같은 문제들을 해결하기 위해 만든 라이브러리
     (문자열이 상당수의 빈 칸을 포함해야 단어를 인식할 수 있습니다.
     IMGText는 한국어에 최적화되어 있으므로, 빈 칸을 사용하지 않는 언어는
     한국어처럼 자연스럽게 단어가 구분되지 않을 수도 있습니다.)
-  - <img> 태그의 "imgtext" 클래스에 CSS나 JavaScript를 연결하여
+  - 그림자를 추가하고 그 위치, 색상, 투명도 등을 설정할 수 있습니다.
+  - `<img>` 태그의 `imgtext` 클래스에 CSS나 JavaScript를 연결하여
     쉽게 다양한 스타일을 구현할 수 있습니다.
   - 각 이미지에는 원래의 단어가 alt 텍스트로 연결되어
     검색 엔진이나 스크린 리더를 정상적으로 사용할 수 있도록 해 줍니다.
@@ -103,42 +109,75 @@ IMGText의 실제 사용 예제는 위를 참고하십시오.
     마지막에 `/` 문자를 포함하지 마십시오.
     예: `/usr/share/fonts`.
   
-  - _문자열_ **font_ext** (optional):
+  - _문자열_ **font_ext** (선택):
     사용할 글꼴 파일들의 확장자를 지정할 수 있습니다. 기본값은 `ttf`입니다.
     OTF 글꼴 파일을 사용하려면 이 속성을 변경해야 합니다.
     이 속성은 대소문자를 구별합니다.
-
-#### get_html() 메소드
-
-인수들:
-
-  - _문자열_ **$text** (필수):
-    디스플레이할 문자열을 지정하여 주십시오.
-  - _문자열_ **$font** (필수):
+  
+  - _문자열_ **font_name** (필수):
     사용할 글꼴 파일의 이름을 지정하여 주십시오.
-    이 인수는 대소문자를 구별합니다. 
-  - _정수_ **$size**  (필수):
+    이 속성은 대소문자를 구별합니다. 
+    
+  - _정수_ **$font_size** (선택):
     사용할 글자 크기를 지정해 주십시오. 단위는 포인트입니다.
-  - _16진수_ **$color** (optional):
+    기본값은 32포인트입니다.
+    
+  - _정수_ **$image_height** (선택):
+    생성할 이미지들의 높이를 지정할 수 있습니다. 단위는 픽셀입니다.
+    이 속성을 사용하면 이미지들의 높이를 특정한 값으로 강제할 수 있습니다.
+    지정하지 않을 경우 자동으로 계산됩니다.
+    
+  - _16진수_ **$color** (선택):
     글자 색상을 지정해 주십시오.
-    문법은 `000000` (검정), `ffffff` (흰색) 등 CSS 색상과 동일합니다.
-    `f00` (빨강) 등 3글자로 단축된 형태도 지원합니다.
-    지정하지 않을 경우 기본값은 검은색입니다.
-  - _16진수_ **$bg** (optional):
-    배경 색상을 지정해 주십시오. 문법은 위와 동일합니다.
+    문법은 `#0000ff` (파랑) 등 CSS 색상과 동일합니다.
+    `#f00` (빨강) 등 3글자로 단축된 형태도 지원합니다.
+    지정하지 않을 경우 기본값은 `#000000` (검정)입니다.
+    
+  - _16진수_ **$background_color** (선택):
+    배경 색상을 지정해 주십시오. 문법은 위의 $color와 동일합니다.
     투명한 배경을 지정하려면 `false`를 사용하십시오.
     지정하지 않을 경우 기본값은 투명입니다.
-  - _정수_ **$height** (optional):
-    생성할 이미지들의 높이를 지정할 수 있습니다. 단위는 픽셀입니다.
-    이 인수를 사용하면 이미지들의 높이를 특정한 값으로 강제할 수 있습니다.
-    지정하지 않을 경우 상하로 가장 긴 글자의 높이를 사용합니다.
-  - _배열_ **$margins** (optional):
+    
+  - _배열_ **$padding** (선택):
     각각의 이미지 주위에 넣을 여백을 지정할 수 있습니다. 단위는 픽셀입니다.
-    이 인수의 값은 4개의 정수를 포함한 배열이어야 합니다.
+    이 속성의 값은 4개의 정수를 포함한 배열이어야 합니다.
     정수들은 CSS와 동일한 순서로 나열해 주십시오. 위-오른쪽-아래-왼쪽입니다.
     글자의 일부분이 틀 밖으로 벗어나는 글꼴을 사용하실 경우 유용한 기능입니다.
     이 경우 CSS를 이용하여 각각의 이미지 주위에 마이너스 여백을 주어
     단어 간격을 조절해 주시는 것이 좋습니다.
+    지정하지 않을 경우에는 별도의 여백을 추가하지 않습니다.
+    
+  - _참/거짓_ **$shadow** (선택):
+    이 값을 `true`로 바꾸면 그림자를 표시할 수 있습니다.
+    지정하지 않을 경우 기본값은 `false`입니다.
+    
+  - _16진수_ **$shadow_color** (선택):
+    그림자의 색상을 지정해 주십시오. 문법은 위의 $color와 동일합니다.
+    지정하지 않을 경우 기본값은 `#000000` (검정)입니다.
+    
+  - _정수_ **$shadow_opacity** (선택):
+    그림자의 투명도를 지정해 주십시오. 이 속성은 0과 127 사이의 정수여야 합니다.
+    0은 완전히 불투명함을 뜻하고, 127은 완전히 투명함을 뜻합니다.
+    지정하지 않을 경우 기본값은 반투명을 뜻하는 64입니다.
+
+  - _배열_ **$shadow_offset** (선택):
+    그림자의 상하좌우 위치를 지정해 주십시오. 단위는 픽셀입니다.
+    이 속성의 값은 2개의 정수를 포함한 배열이어야 합니다.
+    첫째는 좌우 위치, 둘째는 상하 위치를 의미합니다.
+    양수를 사용하면 오른쪽 및 아래로 그림자가 이동하고,
+    음수를 사용하면 왼쪽 및 위로 그림자가 이동합니다.
+    지정하지 않을 경우 기본값은 (2, 2)입니다.
+
+  - _정수_ **$shadow_blur** (선택):
+    그림자를 부드럽게 만들 수 있습니다. 단위는 픽셀입니다.
+    지정하지 않을 경우 선명하게 표시됩니다.
+
+#### get_html() 메소드
+
+인수:
+
+  - _문자열_ **$text** (필수):
+    디스플레이할 문자열을 지정하여 주십시오.
 
 반환값: HTML 마크업을 포함한 문자열.
 
