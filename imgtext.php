@@ -93,7 +93,7 @@ class IMGText
         // Compute a hash for this method call, and return cached HTML markup if possible.
         
         $params = get_object_vars($this);
-        $hash = substr(md5($text . "\n" . serialize($params)), 0, 12);
+        $hash = substr(md5($text . "\n" . serialize($params)), 6, 14);
         if ($html = $this->get_cache($hash)) return $html;
         
         // If cached HTML markup is not available, create it now.
