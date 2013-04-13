@@ -41,7 +41,7 @@ As a result, many Asian web designers are stuck with OS default fonts,
 or resort to images. (Other options, such as `<canvas>`, is rarely used because
 the affected countries also have a major infestation of outdated browsers.)
 The former looks hideous, especially at large font sizes used in headings.
-The latter, on the other hand, suffers from several disadvantages:
+Using images, on the other hand, suffers from several disadvantages:
 
   - Each image needs to be created by hand, and it is difficult to maintain
     consistency in font size, color, etc. over a long time.
@@ -54,7 +54,8 @@ The latter, on the other hand, suffers from several disadvantages:
 
 IMGText is meant to solve these problems, not by addressing the source of
 the problems (lack of usable web fonts for Asian scripts), but by acknowledging
-the sad reality and automating image generation and use as much as possible.
+the sad reality and automating image generation and web app integration
+as much as possible.
 
   - Given a string, a font, and some options such as font size and color,
     IMGText generates a PNG image for each word in the string,
@@ -81,7 +82,7 @@ You will also need:
 
   - At least one TTF font file that contains all the glyphs you need.
   - A cache directory that is writable by PHP.
-    This is where generated PNG images and metadate will be stored.
+    This is where generated PNG images and metadata will be stored.
     This directory should also be accessible by visitors to your web site.
 
 Please see the example above for an overview of how IMGText works.
@@ -186,9 +187,14 @@ Return value: A string containing the HTML markup.
     The same applies to newlines, so it is currently not possible to have
     paragraph breaks inside the generated HTML markup.
     If you need paragraphs, consider using IMGText on one paragraph at a time.
+  - Because the spaces between images are styled by the browser according to
+    the font size of the parent element, they may be too wide or too narrow
+    for the font that you used with IMGText. Use extra padding or CSS margins
+    to fix this problem.
   - There is no need to escape special characters in this string,
-    because they are already escaped.
-  - The HTML markup should be pasted into a page encoded in UTF-8.
+    because they are already escaped. However, if the text you pass to IMGText
+    is already escaped, the escape sequence will be printed verbatim.
+  - The HTML markup should be inserted into a page encoded in **UTF-8**.
 
 ### Miscellaneous Information
 
