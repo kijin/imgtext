@@ -230,30 +230,38 @@ class IMGText
             
             if ($this->shadow)
             {
-                $img_width += abs($this->shadow_offset[0]) + $this->shadow_blur;
-                $img_height += abs($this->shadow_offset[1]) + $this->shadow_blur;
-                $text_left += $this->shadow_blur;
-                $text_top += $this->shadow_blur;
-                
                 if ($this->shadow_offset[0] < 0)
                 {
-                    $shadow_left = $text_left;
-                    $text_left -= $this->shadow_offset[0];
+                    $shadow_space_left = $this->shadow_blur - $this->shadow_offset[0];
+                    $shadow_space_right = max(0, $this->shadow_blur + abs($this->shadow_offset[0]));
+                    $shadow_left = $text_left + $shadow_space_left;
+                    $text_left = $text_left + $shadow_space_left - $this->shadow_offset[0];
                 }
                 else
                 {
-                    $shadow_left = $text_left + $this->shadow_offset[0];
+                    $shadow_space_left = max(0, $this->shadow_blur - $this->shadow_offset[0]);
+                    $shadow_space_right = $this->shadow_blur + $this->shadow_offset[0];
+                    $shadow_left = $text_left + $shadow_space_left + $this->shadow_offset[0];
+                    $text_left = $text_left + $shadow_space_left;
                 }
                 
                 if ($this->shadow_offset[1] < 0)
                 {
-                    $shadow_top = $text_top;
-                    $text_top -= $this->shadow_offset[1];
+                    $shadow_space_top = $this->shadow_blur - $this->shadow_offset[1];
+                    $shadow_space_bottom = max(0, $this->shadow_blur + abs($this->shadow_offset[1]));
+                    $shadow_top = $text_top + $shadow_space_top;
+                    $text_top =  $text_top + $shadow_space_top - $this->shadow_offset[1];
                 }
                 else
                 {
-                    $shadow_top = $text_top + $this->shadow_offset[1];
+                    $shadow_space_top = max(0, $this->shadow_blur - $this->shadow_offset[1]);
+                    $shadow_space_bottom = $this->shadow_blur + $this->shadow_offset[1];
+                    $shadow_top = $text_top + $shadow_space_top + $this->shadow_offset[1];
+                    $text_top = $text_top + $shadow_space_top;
                 }
+                
+                $img_width += $shadow_space_left + $shadow_space_right;
+                $img_height += $shadow_space_top + $shadow_space_bottom;
             }
             
             // Initialize the image and draw the background.
