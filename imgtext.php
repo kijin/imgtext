@@ -81,23 +81,24 @@ class IMGText
     
     public function get_html($text, $font_name = null, $font_size = null, $color = null, $background_color = null, $image_height = null, $padding = null)
     {
-        // Fill default values.
+        // If this method is called using the old-style parameters, populate properties using such parameters.
         
-        if ($font_name === null) $font_name = $this->font_name;
-        if ($font_size === null) $font_size = $this->font_size;
-        if ($color === null) $color = $this->color;
-        if ($background_color === null) $background_color = $this->background_color;
-        if ($image_height === null) $image_height = $this->image_height;
-        if ($padding === null) $padding = $this->padding;
+        if ($font_name !== null) $this->font_name = $font_name;
+        if ($font_size !== null) $this->font_size = $font_size;
+        if ($color !== null) $this->color = $color;
+        if ($background_color !== null) $this->background_color = $background_color;
+        if ($image_height !== null) $this->image_height = $image_height;
+        if ($padding !== null) $this->padding;
         
         // Compute a hash for this method call, and return cached HTML markup if possible.
         
-        $hash = substr(md5(serialize(array($text, $font_name, $font_size, $color, $background_color, $image_height, $padding))), 0, 12);
+        $params = get_object_vars($this);
+        $hash = substr(md5($text . "\n" . serialize($params)), 0, 12);
         if ($html = $this->get_cache($hash)) return $html;
         
         // If cached HTML markup is not available, create it now.
         
-        $result = $this->create_images($hash, $text, $font_name, $font_size, $color, $background_color, $image_height, $padding);
+        $result = $this->create_images($text, $hash);
         $html = '';
         
         foreach ($result as $img)
@@ -132,32 +133,42 @@ class IMGText
     
     // This method creates the actual PNG images.
     
-    protected function create_images($hash, $text, $font_name, $font_size, $color, $background_color, $height, $padding)
+    protected function create_images($text, $hash)
     {
         // Check parameters.
         
         if (trim($text) === '') return array();
         if (!mb_check_encoding($text, 'UTF-8')) throw new IMGTextException('String is not valid UTF-8');
         
-        $font_filename = $this->font_dir . '/' . $font_name . '.' . $this->font_ext;
+        $font_filename = $this->font_dir . '/' . $this->font_name . '.' . $this->font_ext;
         if (!file_exists($font_filename)) throw new IMGTextException('Font not found: ' . $font);
         
-        $font_size = (int)$font_size;
+        $font_size = (int)$this->font_size;
         if ($font_size <= 0) throw new IMGTextException('Invalid font size: ' . $size);
         
-        if (!preg_match('/^#?(?:[0-9a-f]{3})(?:[0-9a-f]{3})?$/', $color))
+        if (!preg_match('/^#?(?:[0-9a-f]{3})(?:[0-9a-f]{3})?$/', $this->color))
         {
-            throw new IMGTextException('Invalid text color: ' . $color);
+            throw new IMGTextException('Invalid text color: ' . $this->color);
         }
         
-        if ($background_color !== false && !preg_match('/^#?(?:[0-9a-f]{3})(?:[0-9a-f]{3})?$/', $background_color))
+        if ($this->background_color !== false && !preg_match('/^#?(?:[0-9a-f]{3})(?:[0-9a-f]{3})?$/', $this->background_color))
         {
-            throw new IMGTextException('Invalid background color: ' . $color);
+            throw new IMGTextException('Invalid background color: ' . $this->background_color);
         }
         
-        if (!is_array($padding) || count($padding) != 4)
+        if (!is_array($this->padding) || count($this->padding) != 4)
         {
-            throw new IMGTextException('Invalid padding');
+            throw new IMGTextException('Invalid padding. Please use array with 4 members.');
+        }
+        
+        if (!is_array($this->shadow_offset) || count($this->shadow_offset) != 2)
+        {
+            throw new IMGTextException('Invalid shadow offset. Please use array with 2 members.');
+        }
+        
+        if ($this->shadow_opacity < 0 || $this->shadow_opacity > 127)
+        {
+            throw new IMGTextException('Invalid shadow opacity. Please use a value between 0 (opaque) and 127 (transparent).');
         }
         
         // Split the text into words.
@@ -166,15 +177,14 @@ class IMGText
         
         // Parse the padding amount.
         
-        $padding_top = intval($padding[0]);
-        $padding_right = intval($padding[1]);
-        $padding_bottom = intval($padding[2]);
-        $padding_left = intval($padding[3]);
+        $padding_top = intval($this->padding[0]);
+        $padding_right = intval($this->padding[1]);
+        $padding_bottom = intval($this->padding[2]);
+        $padding_left = intval($this->padding[3]);
         
         // Get size information for each word.
         
         $fragments = array();
-        $fixed_height = intval($height);
         $max_height = 0;
         $max_top = 0;
         
@@ -212,7 +222,7 @@ class IMGText
             list($w, $width, $height, $left, $top) = $f;
             
             $img_width = $width + $padding_left + $padding_right;
-            $img_height = ($fixed_height > 0 ? $fixed_height : $max_height) + $padding_top + $padding_bottom;
+            $img_height = $this->image_height ? $this->image_height : ($max_height + $padding_top + $padding_bottom);
             $text_left = $left + $padding_left;
             $text_top = $max_top + $padding_top;
             
@@ -222,6 +232,8 @@ class IMGText
             {
                 $img_width += abs($this->shadow_offset[0]) + $this->shadow_blur;
                 $img_height += abs($this->shadow_offset[1]) + $this->shadow_blur;
+                $text_left += $this->shadow_blur;
+                $text_top += $this->shadow_blur;
                 
                 if ($this->shadow_offset[0] < 0)
                 {
@@ -248,7 +260,7 @@ class IMGText
             
             $img = imageCreateTrueColor($img_width, $img_height);
             
-            if ($background_color === false)
+            if ($this->background_color === false)
             {
                 imageSaveAlpha($img, true);
                 imageAlphaBlending($img, false);
@@ -258,7 +270,7 @@ class IMGText
             }
             else
             {
-                $img_background_colors = $this->hex2rgb($background_color);
+                $img_background_colors = $this->hex2rgb($this->background_color);
                 $img_background_color = imageColorAllocate($img, $img_background_colors[0], $img_background_colors[1], $img_background_colors[2]);
                 imageFilledRectangle($img, 0, 0, $img_width, $img_height, $img_background_color);
             }
@@ -269,7 +281,7 @@ class IMGText
             {
                 // Blurred shadow on a transparent background needs special treatment because of GD's limitations.
                 
-                if ($this->shadow_blur && $background_color === false)
+                if ($this->shadow_blur && $this->background_color === false)
                 {
                     // Create a temporary image for the shadow.
                     
@@ -311,7 +323,7 @@ class IMGText
             
             // Draw the word.
             
-            $text_colors = $this->hex2rgb($color);
+            $text_colors = $this->hex2rgb($this->color);
             $text_color = imageColorAllocate($img, $text_colors[0], $text_colors[1], $text_colors[2]);
             imageTTFText($img, $font_size, 0, $text_left, $text_top, $text_color, $font_filename, $w);
 			
