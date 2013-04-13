@@ -247,6 +247,10 @@ class IMGText
                 $shadow_colors = $this->hex2rgb($this->shadow_color);
                 $shadow_color = imageColorAllocateAlpha($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2], $this->shadow_opacity);
                 imageTTFText($img, $font_size, 0, ($left + $padding_left + $this->shadow_offset[0] - 1), ($max_top + $padding_top + $this->shadow_offset[1] - 1), $shadow_color, $font_filename, $w);
+                for ($i = 0; $i < $this->shadow_blur; $i++)
+                {
+                    imageFilter($img, IMG_FILTER_GAUSSIAN_BLUR);
+                }
             }
             
             // Draw the word.
