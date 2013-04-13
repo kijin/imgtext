@@ -4,7 +4,7 @@
  * IMGText: For the rest of us who are stuck without web fonts
  * 
  * URL: http://github.com/kijin/imgtext
- * Version: 0.1.3
+ * Version: 0.2
  * 
  * Copyright (c) 2013, Kijin Sung <kijin@kijinsung.com>
  * 
