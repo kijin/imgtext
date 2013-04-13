@@ -191,8 +191,8 @@ class IMGText
             
             $width = $bounds[2] - $bounds[0];
             $height = $bounds[3] - $bounds[5];
-            $left = $bounds[6] * -1;
-            $top = $bounds[7] * -1;
+            $left = -$bounds[6] - 1;
+            $top = -$bounds[7] - 1;
             
             // Update the max height/top values if necessary.
             
@@ -212,8 +212,9 @@ class IMGText
             list($w, $width, $height, $left, $top) = $f;
             
             $img_width = $width + $padding_left + $padding_right;
-            $img_height = ($fixed_height > 0) ? $fixed_height : $max_height;
-            $img_height += $padding_top + $padding_bottom;
+            $img_height = ($fixed_height > 0 ? $fixed_height : $max_height) + $padding_top + $padding_bottom;
+            $text_left = $left + $padding_left;
+            $text_top = $max_top + $padding_top;
             
             // Adjust image size and text location if there's a shadow.
             
@@ -221,11 +222,31 @@ class IMGText
             {
                 $img_width += abs($this->shadow_offset[0]) + $this->shadow_blur;
                 $img_height += abs($this->shadow_offset[1]) + $this->shadow_blur;
+                
+                if ($this->shadow_offset[0] < 0)
+                {
+                    $shadow_left = $text_left;
+                    $text_left -= $this->shadow_offset[0];
+                }
+                else
+                {
+                    $shadow_left = $text_left + $this->shadow_offset[0];
+                }
+                
+                if ($this->shadow_offset[1] < 0)
+                {
+                    $shadow_top = $text_top;
+                    $text_top -= $this->shadow_offset[1];
+                }
+                else
+                {
+                    $shadow_top = $text_top + $this->shadow_offset[1];
+                }
             }
             
-            $img = imageCreateTrueColor($img_width, $img_height);
+            // Initialize the image and draw the background.
             
-            // Draw the background.
+            $img = imageCreateTrueColor($img_width, $img_height);
             
             if ($background_color === false)
             {
@@ -259,7 +280,7 @@ class IMGText
                     // Draw the shadow text on the temporary image, and blur it.
                     
                     $temp_text_color = imageColorAllocate($temp, $this->shadow_opacity, $this->shadow_opacity, $this->shadow_opacity);
-                    imageTTFText($temp, $font_size, 0, ($left + $padding_left + $this->shadow_offset[0] - 1), ($max_top + $padding_top + $this->shadow_offset[1] - 1), $temp_text_color, $font_filename, $w);
+                    imageTTFText($temp, $font_size, 0, $shadow_left, $shadow_top, $temp_text_color, $font_filename, $w);
                     for ($i = 0; $i < $this->shadow_blur; $i++) imageFilter($temp, IMG_FILTER_GAUSSIAN_BLUR);
                     
                     // Use the blurred shadow as an alpha mask on the original image.
@@ -283,7 +304,7 @@ class IMGText
                 {
                     $shadow_colors = $this->hex2rgb($this->shadow_color);
                     $shadow_color = imageColorAllocateAlpha($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2], $this->shadow_opacity);
-                    imageTTFText($img, $font_size, 0, ($left + $padding_left + $this->shadow_offset[0] - 1), ($max_top + $padding_top + $this->shadow_offset[1] - 1), $shadow_color, $font_filename, $w);
+                    imageTTFText($img, $font_size, 0, $shadow_left, $shadow_top, $shadow_color, $font_filename, $w);
                     for ($i = 0; $i < $this->shadow_blur; $i++) imageFilter($img, IMG_FILTER_GAUSSIAN_BLUR);
                 }
             }
@@ -292,7 +313,7 @@ class IMGText
             
             $text_colors = $this->hex2rgb($color);
             $text_color = imageColorAllocate($img, $text_colors[0], $text_colors[1], $text_colors[2]);
-            imageTTFText($img, $font_size, 0, ($left + $padding_left - 1), ($max_top + $padding_top - 1), $text_color, $font_filename, $w);
+            imageTTFText($img, $font_size, 0, $text_left, $text_top, $text_color, $font_filename, $w);
 			
             // Save to a PNG file.
             
