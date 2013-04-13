@@ -38,7 +38,7 @@ Japanese, and Chinese (both traditional and simplified). These languages
 contain thousands of glyphs, resulting in web fonts that are several MB in size.
 
 As a result, many Asian web designers are stuck with OS default fonts,
-or resort to images. (Other options, such as <canvas>, is rarely used because
+or resort to images. (Other options, such as `<canvas>`, is rarely used because
 the affected countries also have a major infestation of outdated browsers.)
 The former looks hideous, especially at large font sizes used in headings.
 The latter, on the other hand, suffers from several disadvantages:
