@@ -244,12 +244,37 @@ class IMGText
             
             if ($this->shadow)
             {
-                $shadow_colors = $this->hex2rgb($this->shadow_color);
-                $shadow_color = imageColorAllocateAlpha($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2], $this->shadow_opacity);
-                imageTTFText($img, $font_size, 0, ($left + $padding_left + $this->shadow_offset[0] - 1), ($max_top + $padding_top + $this->shadow_offset[1] - 1), $shadow_color, $font_filename, $w);
-                for ($i = 0; $i < $this->shadow_blur; $i++)
+                if ($background_color === false)  // Transparent background needs manual alpha merge, because GD can't blur transparent images.
                 {
-                    imageFilter($img, IMG_FILTER_GAUSSIAN_BLUR);
+                    $shadow_colors = $this->hex2rgb($this->shadow_color);
+                    $temp = imageCreateTrueColor($img_width, $img_height);
+                    imageSaveAlpha($temp, true);
+                    imageFilledRectangle($temp, 0, 0, $img_width, $img_height, imageColorAllocate($temp, 127, 127, 127));
+                    
+                    $temp_text_color = imageColorAllocate($temp, $this->shadow_opacity, $this->shadow_opacity, $this->shadow_opacity);
+                    imageTTFText($temp, $font_size, 0, ($left + $padding_left + $this->shadow_offset[0] - 1), ($max_top + $padding_top + $this->shadow_offset[1] - 1), $temp_text_color, $font_filename, $w);
+                    for ($i = 0; $i < $this->shadow_blur; $i++)
+                    {
+                        imageFilter($temp, IMG_FILTER_GAUSSIAN_BLUR);
+                    }
+                    for ($x = 0; $x < $img_width; $x++)
+                    {
+                        for ($y = 0; $y < $img_height; $y++)
+                        {
+                            $alpha = imageColorAt($temp, $x, $y) & 0xFF;
+                            imageSetPixel($img, $x, $y, imageColorAllocateAlpha($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2], $alpha));
+                        }
+                    }
+                }
+                else  // Colored background works fine without any additional code.
+                {
+                    $shadow_colors = $this->hex2rgb($this->shadow_color);
+                    $shadow_color = imageColorAllocateAlpha($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2], $this->shadow_opacity);
+                    imageTTFText($img, $font_size, 0, ($left + $padding_left + $this->shadow_offset[0] - 1), ($max_top + $padding_top + $this->shadow_offset[1] - 1), $shadow_color, $font_filename, $w);
+                    for ($i = 0; $i < $this->shadow_blur; $i++)
+                    {
+                        imageFilter($img, IMG_FILTER_GAUSSIAN_BLUR);
+                    }
                 }
             }
             
