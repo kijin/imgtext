@@ -4,7 +4,7 @@
  * IMGText: For the rest of us who are stuck without web fonts
  * 
  * URL: http://github.com/kijin/imgtext
- * Version: 0.1.2
+ * Version: 0.1.3
  * 
  * Copyright (c) 2013, Kijin Sung <kijin@kijinsung.com>
  * 
@@ -45,27 +45,58 @@ class IMGText
     
     public $font_ext = 'ttf';
     
-    // Set the effect
-	
-    public $effect = 'normal';
+    // Set the name of the font, without the extension.
     
-    // Set the shadow effect options
-    protected $shadow_left;
-    protected $shadow_top;
-    protected $shadow_color;
+    public $font_name;
+    
+    // Set the size of the font.
+    
+    public $font_size;
+    
+    // Set the image height. The default is automatic.
+    
+    public $image_height = false;
+    
+    // Set the text color.
+    
+    public $color = '#000';
+    
+    // Set the background color. The default is transparent.
+    
+    public $background_color = false;
+    
+    // Set the padding amount.
+    
+    public $padding = array(0, 0, 0, 0);
+    
+    // Set the shadow properties.
+    
+    public $shadow = false;
+    public $shadow_color = '#000';
+    public $shadow_offset = array(2, 2);
+    public $shadow_blur = 0;
 	
     // Call this method to retrieve the HTML markup for your text.
     
-    public function get_html($text, $font, $size, $color = '000', $bg = false, $height = false, $margins = array(0, 0, 0, 0))
+    public function get_html($text, $font_name = null, $font_size = null, $color = null, $background_color = null, $image_height = null, $padding = null)
     {
+        // Fill default values.
+        
+        if ($font_name === null) $font_name = $this->font_name;
+        if ($font_size === null) $font_size = $this->font_size;
+        if ($color === null) $color = $this->color;
+        if ($background_color === null) $background_color = $this->background_color;
+        if ($image_height === null) $image_height = $this->image_height;
+        if ($padding === null) $padding = $this->padding;
+        
         // Compute a hash for this method call, and return cached HTML markup if possible.
         
-        $hash = substr(md5(serialize(array($text, $font, $size, $color, $bg, $height, $margins))), 0, 12);
+        $hash = substr(md5(serialize(array($text, $font_name, $font_size, $color, $background_color, $image_height, $padding))), 0, 12);
         if ($html = $this->get_cache($hash)) return $html;
         
         // If cached HTML markup is not available, create it now.
         
-        $result = $this->create_images($hash, $text, $font, $size, $color, $bg, $height, $margins);
+        $result = $this->create_images($hash, $text, $font_name, $font_size, $color, $background_color, $image_height, $padding);
         $html = '';
         
         foreach ($result as $img)
@@ -100,7 +131,7 @@ class IMGText
     
     // This method creates the actual PNG images.
     
-    protected function create_images($hash, $text, $font, $size, $color, $bg, $height, $margins)
+    protected function create_images($hash, $text, $font, $size, $color, $bg, $height, $padding)
     {
         // Check parameters.
         
@@ -123,7 +154,7 @@ class IMGText
             throw new IMGTextException('Invalid background color: ' . $color);
         }
         
-        if (!is_array($margins) || count($margins) != 4)
+        if (!is_array($padding) || count($padding) != 4)
         {
             throw new IMGTextException('Invalid margins');
         }
@@ -132,12 +163,12 @@ class IMGText
         
         $words = preg_split('/\\s+/u', $text);
         
-        // Parse the margins.
+        // Parse the padding amount.
         
-        $margin_top = intval($margins[0]);
-        $margin_right = intval($margins[1]);
-        $margin_bottom = intval($margins[2]);
-        $margin_left = intval($margins[3]);
+        $padding_top = intval($padding[0]);
+        $padding_right = intval($padding[1]);
+        $padding_bottom = intval($padding[2]);
+        $padding_left = intval($padding[3]);
         
         // Get size information for each word.
         
@@ -179,10 +210,15 @@ class IMGText
         {
             list($w, $width, $height, $left, $top) = $f;
             
-            $imgwidth = $width + $margin_left + $margin_right + 2;
+            $imgwidth = $width + $padding_left + $padding_right;
             $imgheight = ($fixed_height > 0) ? $fixed_height : $max_height;
-            $imgheight += $margin_top + $margin_bottom;
-            if($this->effect == "shadow") $imgheight += 2;
+            $imgheight += $padding_top + $padding_bottom;
+            
+            if ($this->shadow)
+            {
+                $imgwidth += $this->shadow_offset[0];
+                $imgheight += $this->shadow_offset[1];
+            }
             
             $img = imageCreateTrueColor($imgwidth, $imgheight);
             
@@ -202,23 +238,24 @@ class IMGText
                 $background = imageColorAllocate($img, $bgcolors[0], $bgcolors[1], $bgcolors[2]);
                 imageFilledRectangle($img, 0, 0, $imgwidth, $imgheight, $background);
             }
-
-            switch($this->effect){
-                case'shadow':
-                    $shadow_colors = $this->hex2rgb($this->shadow_color);
-                    $shadow_color = imageColorAllocate($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2]);
-                    imageTTFText($img, $font_size, 0, ($left + $margin_left + $this->shadow_left), ($max_top + $margin_top + $this->shadow_top), $shadow_color, $font_filename, $w);
-                    break;
-                default:
-                    break;
+            
+            // Draw the shadow.
+            
+            if ($this->shadow)
+            {
+                $shadow_colors = $this->hex2rgb($this->shadow_color);
+                $shadow_color = imageColorAllocate($img, $shadow_colors[0], $shadow_colors[1], $shadow_colors[2]);
+                imageTTFText($img, $font_size, 0, ($left + $padding_left + $this->shadow_offset[0] - 1), ($max_top + $padding_top + $this->shadow_offset[1] - 1), $shadow_color, $font_filename, $w);
             }
-			
+            
             // Draw the word.
+            
             $fgcolors = $this->hex2rgb($color);
             $foreground = imageColorAllocate($img, $fgcolors[0], $fgcolors[1], $fgcolors[2]);
-            imageTTFText($img, $font_size, 0, ($left + $margin_left), ($max_top + $margin_top - 1), $foreground, $font_filename, $w);
+            imageTTFText($img, $font_size, 0, ($left + $padding_left - 1), ($max_top + $padding_top - 1), $foreground, $font_filename, $w);
 			
             // Save to a PNG file.
+            
             $filename = '/imgtext.' . $hash . '.word-' . str_pad($count, 3, '0', STR_PAD_LEFT) . '.png';
             imagePNG($img, $this->cache_local_dir . $filename);
             imageDestroy($img);
@@ -264,13 +301,6 @@ class IMGText
         // Returns an array with 3 elements (R, G, B).
         
         return array($r, $g, $b);
-    }
-	
-    public function set_shadow_effect($effect, $shadow_left = 5, $shadow_top = 2, $shadow_color = "#808080"){
-        $this->effect = $effect;
-        $this->shadow_left = $shadow_left;
-        $this->shadow_top = $shadow_top;
-        $this->shadow_color = $shadow_color;
     }
 }
 
