@@ -1,0 +1,20 @@
+{
+    "name": "kijin/imgtext",
+    "description": "For the rest of us who are stuck without web fonts",
+    "type": "library",
+    "keywords": ["korean", "fonts"],
+    "homepage": "https://github.com/kijin/pinboard-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kijin Sung",
+            "email": "kijin@kijinsung.com",
+            "homepage": "http://www.kijinsung.com/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.0.0",
+        "ext-gd": "*"
+    }
+}
