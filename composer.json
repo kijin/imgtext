@@ -3,7 +3,7 @@
     "description": "For the rest of us who are stuck without web fonts",
     "type": "library",
     "keywords": ["korean", "fonts"],
-    "homepage": "https://github.com/kijin/pinboard-api",
+    "homepage": "https://github.com/kijin/imgtext",
     "license": "MIT",
     "authors": [
         {
